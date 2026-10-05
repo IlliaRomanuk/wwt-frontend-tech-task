@@ -3,7 +3,7 @@ name: Pipeline
 on: [push, pull_request]
 
 jobs:
-  build:
+  check:
     runs-on: ubuntu-latest
 
     strategy:
@@ -12,12 +12,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: ${{matrix.node-version}}
+          node-version: ${{ matrix.node-version }}
 
       - name: Install pnpm
         run: npm install -g pnpm
@@ -25,11 +25,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Run build
-        run: npm run build
-
-      - name: Run format
+      - name: Run format check
         run: npm run format:check:all
 
       - name: Run lint
         run: npm run lint:all
+
+      - name: Run tests
+        run: pnpm exec vitest run
+
+      - name: Run build
+        run: npm run build
